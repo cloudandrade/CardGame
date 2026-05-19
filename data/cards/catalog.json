@@ -1,0 +1,154 @@
+{
+  "version": 3,
+  "count": 10,
+  "cards": [
+    {
+      "id": "golem-runico-floresta",
+      "name": "Golem Rúnico da Floresta Sagrada",
+      "race": "golem",
+      "cardType": "Golem · Terra",
+      "description": "Sentinela de pedra antiga com runas azuis, despertado pela magia da floresta primordial. Imóvel como a montanha, feroz quando profanam seu bosque.",
+      "effectSummary": "Ataca o centro inimigo; defende aliados à esquerda e no centro.",
+      "level": 1,
+      "artUrl": "/cards/art/golem.png",
+      "stats": { "hp": 6, "attack": 3, "defense": 3 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle"] },
+        { "orientation": "down", "category": "defense", "variant": "defense", "power": 3, "directions": ["left", "middle"] }
+      ]
+    },
+    {
+      "id": "sentinela-astral-elfico",
+      "name": "Sentinela Astral Élfica",
+      "race": "elfo",
+      "cardType": "Elfo · Arco",
+      "description": "Arqueira das ilhas flutuantes, arco forjado em luz estelar. Guarda as fronteiras celestes contra sombras que rastejam entre as nuvens.",
+      "effectSummary": "Ataque duplo no centro; encanta aliado à direita.",
+      "level": 1,
+      "artUrl": "/cards/art/elfo.png",
+      "stats": { "hp": 5, "attack": 4, "magic": 2 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "attack-double", "power": 2, "directions": ["middle"] },
+        { "orientation": "down", "category": "magic", "variant": "enchant", "power": 2, "directions": ["right"] }
+      ]
+    },
+    {
+      "id": "fenix-vulcao-eterno",
+      "name": "Fênix do Vulcão Eterno",
+      "race": "besta",
+      "cardType": "Fênix · Fogo",
+      "description": "Renascida das cinzas a cada milênio, suas asas incendeiam o céu. Onde pousa, rios de lava recordam sua fúria.",
+      "effectSummary": "Ataca toda a fileira inimiga.",
+      "level": 2,
+      "artUrl": "/cards/art/fenix.png",
+      "stats": { "hp": 5, "attack": 2 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "group-attack", "power": 2, "directions": [] }
+      ]
+    },
+    {
+      "id": "cavaleiro-laminas-ossos",
+      "name": "Cavaleiro das Lâminas de Ossos",
+      "race": "morto-vivo",
+      "cardType": "Cavaleiro · Sombra",
+      "description": "Cavaleiro espectral que galopa entre túmulos de espadas gigantes. Seus olhos vermelhos juram que ninguém atravessa o campo sem pagar.",
+      "effectSummary": "Ataca centro e direita; defende o centro aliado.",
+      "level": 2,
+      "artUrl": "/cards/art/cavaleiro.png",
+      "stats": { "hp": 7, "attack": 3, "defense": 2 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle", "right"] },
+        { "orientation": "down", "category": "defense", "variant": "defense", "power": 2, "directions": ["middle"] }
+      ]
+    },
+    {
+      "id": "dragao-ceu-azul",
+      "name": "Dragão do Céu Azul",
+      "race": "dragão",
+      "cardType": "Dragão · Vento",
+      "description": "Soberano dos picos acima das nuvens, escamas como o próprio céu. Protege templos antigos nos cumes onde o sol nasce duas vezes.",
+      "effectSummary": "Ataque forte no centro; cura aliado central.",
+      "level": 3,
+      "artUrl": "/cards/art/dragao.png",
+      "stats": { "hp": 8, "attack": 4, "magic": 3 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "attack", "power": 4, "directions": ["middle"] },
+        { "orientation": "down", "category": "magic", "variant": "heal", "power": 3, "directions": ["middle"] }
+      ]
+    },
+    {
+      "id": "sereia-palacio-coral",
+      "name": "Sereia do Palácio de Coral",
+      "race": "sereia",
+      "cardType": "Sereia · Água",
+      "description": "Guardiã das profundezas iluminadas por raios de sol. Seu canto acalma correntes e afasta predadores das ruínas submersas.",
+      "effectSummary": "Cura aliados à esquerda e no centro.",
+      "level": 1,
+      "artUrl": "/cards/art/sereia.png",
+      "stats": { "hp": 6, "magic": 3 },
+      "effects": [
+        { "orientation": "down", "category": "magic", "variant": "heal", "power": 3, "directions": ["left", "middle"] }
+      ]
+    },
+    {
+      "id": "pixie-cogumelo-luminoso",
+      "name": "Pixie do Cogumelo Luminoso",
+      "race": "fada",
+      "cardType": "Fada · Natureza",
+      "description": "Espírito travesso das florestas noturnas, mora no cogumelo que brilha como lua. Engana caçadores e guia os perdidos — por um preço.",
+      "effectSummary": "Encanta o centro; ataque leve à esquerda inimiga.",
+      "level": 1,
+      "artUrl": "/cards/art/fada.png",
+      "stats": { "hp": 4, "attack": 2, "magic": 2 },
+      "effects": [
+        { "orientation": "down", "category": "magic", "variant": "enchant", "power": 2, "directions": ["middle"] },
+        { "orientation": "up", "category": "attack", "variant": "attack", "power": 2, "directions": ["left"] }
+      ]
+    },
+    {
+      "id": "senhor-guerra-deserto",
+      "name": "Senhor da Guerra do Deserto",
+      "race": "orc",
+      "cardType": "Orc · Conquista",
+      "description": "Chefe das tribos das dunas, lâmina curva manchada de areia e sangue. A cidade dourada ao horizonte é o único tesouro que ainda não conquistou.",
+      "effectSummary": "Ataque duplo à direita; defende à esquerda.",
+      "level": 2,
+      "artUrl": "/cards/art/orc.png",
+      "stats": { "hp": 7, "attack": 4, "defense": 3 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "attack-double", "power": 2, "directions": ["right"] },
+        { "orientation": "down", "category": "defense", "variant": "defense", "power": 3, "directions": ["left"] }
+      ]
+    },
+    {
+      "id": "serafim-cidades-flutuantes",
+      "name": "Serafim das Cidades Flutuantes",
+      "race": "celestial",
+      "cardType": "Celestial · Luz",
+      "description": "Guerreira alada que julga almas entre ilhas no céu. Suas asas espalham aurora e seus olhos azuis veem o coração de cada combatente.",
+      "effectSummary": "Ataca centro; defende toda a fileira aliada (fraco).",
+      "level": 3,
+      "artUrl": "/cards/art/serafim.png",
+      "stats": { "hp": 6, "attack": 3, "defense": 1 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle"] },
+        { "orientation": "down", "category": "defense", "variant": "defense", "power": 1, "directions": ["left", "middle", "right"] }
+      ]
+    },
+    {
+      "id": "colosso-gelo-ancestral",
+      "name": "Colosso de Gelo Ancestral",
+      "race": "elemental",
+      "cardType": "Elemental · Gelo",
+      "description": "Titã de gelo despertado quando a aurora toca ruínas do norte. Passos congelam o chão; punhos esmagam muralhas como vidro.",
+      "effectSummary": "Ataca centro e esquerda; alta defesa no centro.",
+      "level": 4,
+      "artUrl": "/cards/art/gelo.png",
+      "stats": { "hp": 9, "attack": 3, "defense": 4 },
+      "effects": [
+        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle", "left"] },
+        { "orientation": "down", "category": "defense", "variant": "defense", "power": 4, "directions": ["middle"] }
+      ]
+    }
+  ]
+}

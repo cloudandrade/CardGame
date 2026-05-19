@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --font-jomhuria: "Jomhuria", serif;
+  --font-fira: "Fira Sans", sans-serif;
+  --bg: #0f0f14;
+  --panel: #1a1a24;
+  --accent: #7c5cff;
+  --accent-hover: #9b82ff;
+  --danger: #ff5c7a;
+  --success: #5cffa0;
+  --text: #f2f2f8;
+  --muted: #9a9ab0;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #1a1530 0%, var(--bg) 55%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.card-tile {
+  background: linear-gradient(145deg, #252535 0%, #1a1a28 100%);
+  border: 2px solid #3a3a55;
+  border-radius: 12px;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-tile:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.card-tile.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(124, 92, 255, 0.35);
+}
+
+.card-tile.damaged {
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.slot-empty {
+  border: 2px dashed #3a3a55;
+  border-radius: 12px;
+  min-height: 120px;
+}
+
+.log-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
