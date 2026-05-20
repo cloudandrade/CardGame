@@ -24,6 +24,7 @@ import { XP_PER_CARD_UNLOCK } from "@/lib/config";
 import { effectLegend } from "@/components/EffectArrows";
 import { GameRulesPanel } from "@/components/GameRules";
 import { PadPreviewStats } from "@/components/PadPreviewStats";
+import { UnlockCelebrationModal } from "@/components/UnlockCelebrationModal";
 import Link from "next/link";
 import {
   addWinXp,
@@ -89,6 +90,7 @@ export function Game() {
   const [pendingCardId, setPendingCardId] = useState<string | null>(null);
   const [battle, setBattle] = useState<BattleState | null>(null);
   const [lastReward, setLastReward] = useState<string | null>(null);
+  const [unlockCards, setUnlockCards] = useState<CardTemplate[]>([]);
   const [handForRun, setHandForRun] = useState<CardTemplate[]>([]);
   const [gridScale, setGridScale] = useState(0.35);
   const [rulesOpen, setRulesOpen] = useState(false);
@@ -175,17 +177,25 @@ export function Game() {
   const applyBattleRewards = useCallback(
     (finished: BattleState) => {
       if (finished.winner === "player" && save) {
+        const rosterIds = new Set(save.rosterCardIds);
         const { save: updated, xpGained, cardsUnlocked } = addWinXp(save);
         setSave(updated);
         setRoster(getRosterTemplates(updated));
+
+        const newUnlocks = cardsUnlocked
+          .filter((id) => !rosterIds.has(id))
+          .map((id) => getCardTemplate(id))
+          .filter((c): c is CardTemplate => Boolean(c));
+        setUnlockCards(newUnlocks);
+
         let msg = `+${xpGained} XP`;
-        for (const id of cardsUnlocked) {
-          const c = getCardTemplate(id);
-          msg += ` · Nova carta no acervo: ${c?.name ?? id}`;
+        for (const card of newUnlocks) {
+          msg += ` · Nova carta no acervo: ${card.name}`;
         }
-        setLastReward(msg);
+        setLastReward(msg || `+${xpGained} XP`);
       } else {
         setLastReward(null);
+        setUnlockCards([]);
       }
     },
     [save],
@@ -221,6 +231,7 @@ export function Game() {
     setPendingCardId(null);
     setBattle(null);
     setLastReward(null);
+    setUnlockCards([]);
     setPhase("menu");
   };
 
@@ -302,6 +313,13 @@ export function Game() {
       )}
 
       <GameRulesPanel open={rulesOpen} onClose={() => setRulesOpen(false)} />
+
+      {unlockCards.length > 0 && (
+        <UnlockCelebrationModal
+          cards={unlockCards}
+          onClose={() => setUnlockCards([])}
+        />
+      )}
 
       {phase === "select" && (
         <section className="space-y-6">

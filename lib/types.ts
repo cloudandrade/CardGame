@@ -10,6 +10,9 @@ export type AttackVariant = "attack" | "attack-double" | "group-attack";
 export type DefenseVariant = "defense";
 export type MagicVariant = "enchant" | "heal";
 
+/** Referência no JSON (ex.: "stats.attack") ou valor numérico literal. */
+export type EffectPowerRef = number | `stats.${keyof CardStats}`;
+
 export interface CardEffect {
   orientation: EffectOrientation;
   category: EffectCategory;
@@ -20,7 +23,7 @@ export interface CardEffect {
 
 export interface CardStats {
   hp: number;
-  attack: number;
+  attack?: number;
   defense?: number;
   magic?: number;
 }

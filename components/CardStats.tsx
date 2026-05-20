@@ -63,7 +63,7 @@ export function CardStats({ stats, currentHp, compact }: CardStatsProps) {
   return (
     <div className={`flex flex-col gap-1 ${compact ? "gap-0.5" : ""}`}>
       <StatItem icon={STAT_ICONS.hp} value={hp} label="Pontos de vida" compact={compact} />
-      {stats.attack > 0 && (
+      {stats.attack != null && stats.attack > 0 && (
         <StatItem icon={STAT_ICONS.attack} value={stats.attack} label="Ataque" compact={compact} />
       )}
       {stats.defense != null && stats.defense > 0 && (
