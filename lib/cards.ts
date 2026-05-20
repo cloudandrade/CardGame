@@ -56,6 +56,7 @@ export function createBattleUnit(
     row,
     effects: template.effects.map((e) => ({ ...e })),
     enchantBonus: 0,
+    defenseRemaining: 0,
   };
 }
 

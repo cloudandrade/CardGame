@@ -1,10 +1,16 @@
 import type { BattleUnit, CardEffect, Column } from "@/lib/types";
 
-/** Colunas alvo relativas à coluna da carta de origem. */
+const ALL_COLUMNS: Column[] = [0, 1, 2];
+
+/** Colunas alvo relativas à coluna da carta de origem. `row` = fileira inteira (ignora posição). */
 export function getRelativeTargetColumns(
   sourceColumn: Column,
   directions: CardEffect["directions"],
 ): Column[] {
+  if (directions.includes("row")) {
+    return [...ALL_COLUMNS];
+  }
+
   const cols = new Set<Column>();
 
   for (const dir of directions) {
@@ -19,7 +25,7 @@ export function getRelativeTargetColumns(
 
 export function getAttackTargetColumns(unit: BattleUnit, effect: CardEffect): Column[] {
   if (effect.variant === "group-attack") {
-    return [0, 1, 2];
+    return [...ALL_COLUMNS];
   }
 
   return getRelativeTargetColumns(unit.column, effect.directions);

@@ -48,6 +48,7 @@ Dentro de Up ou Down, cada efeito lista uma ou mais direções relativas:
 | `middle` | Coluna da própria carta | Coluna da própria carta |
 | `left` | Coluna à esquerda (do ponto de vista do jogador) | Idem |
 | `right` | Coluna à direita | Idem |
+| `row` | **Todas** as colunas da fileira alvo (inimiga ou aliada) | Idem — independente da posição da carta |
 
 **Exemplo (carta no centro M1):**
 
@@ -75,7 +76,7 @@ Uma carta possui **zero ou mais** entradas de efeito. Cada entrada:
 
 ```ts
 type EffectOrientation = "up" | "down";
-type EffectDirection = "left" | "middle" | "right";
+type EffectDirection = "left" | "middle" | "right" | "row";
 
 interface CardEffect {
   orientation: EffectOrientation;  // up | down
@@ -123,7 +124,7 @@ Interpretação: ataca o centro e a esquerda do campo inimigo com 3 de dano cada
 
 | Variant | Comportamento |
 |---------|----------------|
-| `attack` | Aplica `power` de dano a cada alvo válido nas `directions` (Up → fileira inimiga). |
+| `attack` | Aplica `power` de dano a cada alvo válido nas `directions` (Up → fileira inimiga). Use `row` para atingir todas as colunas inimigas ocupadas. |
 | `attack-double` | Igual a `attack`, mas o dano aplicado é `power × 2` (ainda capado por regras de defesa/protect). |
 | `group-attack` | Aplica `power` a **todos os slots ocupados** na fileira alvo (Up = fileira inteira do inimigo; se combinado com Down, fileira inteira aliada — raro em design, mas suportado). Ignora lista `directions` ou trata como “linha completa”. |
 
@@ -131,7 +132,7 @@ Interpretação: ataca o centro e a esquerda do campo inimigo com 3 de dano cada
 
 | Variant | Comportamento |
 |---------|----------------|
-| `defense` | Reduz dano **incoming** nas cartas aliadas indicadas por `directions` em até `power` por rodada. |
+| `defense` | Reduz dano **incoming** nas cartas aliadas indicadas por `directions` em até `power` por rodada. Use `row` para proteger a fileira inteira. |
 | `deflect` | Após redução por `defense`, redireciona até `power` de dano restante de volta ao atacante (slot de origem do ataque) ou à carta inimiga na mesma coluna do atacante — implementação: **dano refletido na carta que declarou o ataque** naquela rodada. |
 | `protect` | Absorve dano destinado a **uma** carta aliada alvo: a carta com `protect` perde PV no lugar do aliado, até `power` ou até sua morte. Custo: PV da protectora. |
 

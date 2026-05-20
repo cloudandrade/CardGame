@@ -1,6 +1,6 @@
 import { CardStats } from "@/components/CardStats";
-import { arrowPadding, EffectArrows } from "@/components/EffectArrows";
-import type { BattleUnit, CardTemplate } from "@/lib/types";
+import { arrowPadding, EffectArrows, type ArrowSide } from "@/components/EffectArrows";
+import type { BattleUnit, CardEffect, CardTemplate } from "@/lib/types";
 
 function isBattleUnit(card: CardTemplate | BattleUnit): card is BattleUnit {
   return "currentHp" in card;
@@ -14,6 +14,8 @@ export interface TcgCardProps {
   /** Escala visual; sobrescreve o padrão de `compact`. */
   sizeScale?: number;
   disabled?: boolean;
+  /** Orientação das setas; inimigo inverte ataque/defesa verticalmente. */
+  arrowSide?: ArrowSide;
 }
 
 /** Largura/altura aproximadas do frame (carta + setas) para calcular zoom no modal. */
@@ -23,14 +25,40 @@ export const TCG_CARD_FRAME_H = 560;
 const CARD_W = 300;
 const CARD_H = 450;
 
-export function TcgCard({ card, selected, onClick, compact, sizeScale, disabled }: TcgCardProps) {
+/** Escala dos pads na tela de seleção (igual ao compact das cartas no tabuleiro). */
+export const PAD_PLACEMENT_SCALE = 0.42;
+
+export function getTcgCardFrameSize(
+  effects: CardEffect[],
+  scale: number,
+  arrowSide: ArrowSide = "player",
+): { width: number; height: number } {
+  const pad = arrowPadding(effects, arrowSide);
+  return {
+    width: CARD_W * scale,
+    height: (CARD_H + pad.top + pad.bottom) * scale,
+  };
+}
+
+export function TcgCard({
+  card,
+  selected,
+  onClick,
+  compact,
+  sizeScale,
+  disabled,
+  arrowSide: arrowSideProp,
+}: TcgCardProps) {
   const stats = card.stats;
   const currentHp = isBattleUnit(card) ? card.currentHp : undefined;
   const level = card.level;
   const cardId = isBattleUnit(card) ? card.instanceId : card.id;
-  const pad = arrowPadding(card.effects);
+  const arrowSide: ArrowSide =
+    arrowSideProp ?? (isBattleUnit(card) ? card.row : "player");
+  const pad = arrowPadding(card.effects, arrowSide);
 
   const scale = sizeScale ?? (compact ? 0.42 : 1);
+  const isCompactView = compact || scale < 0.75;
   const frameH = CARD_H + pad.top + pad.bottom;
   const wrapW = CARD_W * scale;
   const wrapH = frameH * scale;
@@ -49,7 +77,7 @@ export function TcgCard({ card, selected, onClick, compact, sizeScale, disabled 
       className="relative origin-top-left"
       style={{ width: CARD_W, height: frameH, transform: `scale(${scale})` }}
     >
-      <EffectArrows effects={card.effects} cardId={cardId} />
+      <EffectArrows effects={card.effects} cardId={cardId} side={arrowSide} />
 
       <div
         className="absolute left-0 box-border overflow-hidden rounded-[13px] border-2 border-black bg-transparent shadow-lg"
@@ -75,7 +103,7 @@ export function TcgCard({ card, selected, onClick, compact, sizeScale, disabled 
           style={{ width: 268, height: 310 }}
         >
           <div className="absolute left-1 top-2 z-20">
-            <CardStats stats={stats} currentHp={currentHp} compact={compact} />
+            <CardStats stats={stats} currentHp={currentHp} compact={isCompactView} />
           </div>
         </div>
 

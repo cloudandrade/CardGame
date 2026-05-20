@@ -55,8 +55,8 @@ body {
 
 .slot-empty {
   border: 2px dashed #3a3a55;
-  border-radius: 12px;
-  min-height: 120px;
+  border-radius: 13px;
+  box-sizing: border-box;
 }
 
 .log-scroll {

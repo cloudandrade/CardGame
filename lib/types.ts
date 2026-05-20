@@ -1,7 +1,9 @@
+import type { BattleLogEntry } from "@/lib/battle/log";
+
 export type Column = 0 | 1 | 2;
 export type Row = "player" | "enemy";
 export type EffectOrientation = "up" | "down";
-export type EffectDirection = "left" | "middle" | "right";
+export type EffectDirection = "left" | "middle" | "right" | "row";
 export type EffectCategory = "attack" | "defense" | "magic";
 
 export type AttackVariant = "attack" | "attack-double" | "group-attack";
@@ -57,6 +59,8 @@ export interface BattleUnit {
   row: Row;
   effects: CardEffect[];
   enchantBonus: number;
+  /** Pool de bloqueio (rodada 1); debita antes do PV. */
+  defenseRemaining: number;
 }
 
 export type BoardRow = [BattleUnit | null, BattleUnit | null, BattleUnit | null];
@@ -65,9 +69,11 @@ export interface BattleState {
   round: number;
   playerRow: BoardRow;
   enemyRow: BoardRow;
-  log: string[];
+  log: BattleLogEntry[];
+  playerHpMax: number;
+  enemyHpMax: number;
   status: "active" | "finished";
-  winner?: "player" | "enemy";
+  winner?: "player" | "enemy" | "draw";
 }
 
 export interface PlayerSave {

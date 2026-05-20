@@ -38,3 +38,16 @@ Edite este arquivo para alterar nomes, stats, efeitos e textos. Não é necessá
 ## Efeitos (`effects`)
 
 Cada efeito define direção das setas e potência na batalha. Mantenha `power` alinhado aos stats quando possível.
+
+### Direções (`directions`)
+
+| Valor | Significado |
+|-------|-------------|
+| `left`, `middle`, `right` | Coluna relativa à posição da carta (vizinho, si, vizinho) |
+| `row` | **Fileira inteira** — todas as colunas aliadas (defesa/magia) ou todas as colunas inimigas (ataque), independente da posição. Recurso raro. |
+
+Exemplo (Golem — defesa na fileira):
+
+```json
+"directions": ["row"]
+```

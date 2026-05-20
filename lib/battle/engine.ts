@@ -1,3 +1,5 @@
+import { computeDefenseForColumn, totalDefense } from "@/lib/battle/defense";
+import { logRef, type BattleLogEntry } from "@/lib/battle/log";
 import { getAttackTargetColumns, getRelativeTargetColumns } from "@/lib/battle/targets";
 import type {
   BattleState,
@@ -27,42 +29,36 @@ function aliveUnits(row: BoardRow): BattleUnit[] {
   return row.filter((u): u is BattleUnit => u !== null && u.currentHp > 0);
 }
 
+function rowDefenseSources(row: BoardRow) {
+  return row.map((u) => (u ? { column: u.column, effects: u.effects } : null));
+}
+
+function initDefensePools(row: BoardRow): void {
+  for (const unit of aliveUnits(row)) {
+    const breakdown = computeDefenseForColumn(rowDefenseSources(row), unit.column);
+    unit.defenseRemaining = totalDefense(breakdown);
+  }
+}
+
+function sumMaxHp(row: BoardRow): number {
+  return row.reduce((sum, u) => sum + (u?.maxHp ?? 0), 0);
+}
+
 function attackDamage(effect: CardEffect, attacker: BattleUnit): number {
   let power = effect.power;
   if (effect.variant === "attack-double") power *= 2;
   return power + attacker.enchantBonus;
 }
 
-function collectDefense(
-  row: BoardRow,
-  targetCol: Column,
-  incoming: number,
-): { reduced: number; logLines: string[] } {
-  let remaining = incoming;
-  const logs: string[] = [];
-
-  for (const defender of aliveUnits(row)) {
-    if (remaining <= 0) break;
-    for (const effect of defender.effects) {
-      if (effect.category !== "defense" || effect.variant !== "defense") continue;
-      if (effect.orientation !== "down") continue;
-
-      const protectedCols = getRelativeTargetColumns(defender.column, effect.directions);
-      if (!protectedCols.includes(targetCol)) continue;
-
-      const block = Math.min(remaining, effect.power);
-      if (block > 0) {
-        remaining -= block;
-        logs.push(`${defender.emoji} bloqueia ${block}`);
-      }
-    }
-  }
-
-  return { reduced: remaining, logLines: logs };
+interface DamageHit {
+  target: BattleUnit;
+  attacker: BattleUnit;
+  damage: number;
 }
 
-function applyEnchantments(state: BattleState): string[] {
-  const logs: string[] = [];
+function applyEnchantments(state: BattleState): BattleLogEntry[] {
+  if (state.round !== 1) return [];
+  const logs: BattleLogEntry[] = [];
   const allUnits = [...aliveUnits(state.playerRow), ...aliveUnits(state.enemyRow)];
 
   for (const unit of allUnits) {
@@ -75,7 +71,12 @@ function applyEnchantments(state: BattleState): string[] {
         const target = getUnit(row, col);
         if (!target || target.currentHp <= 0) continue;
         target.enchantBonus += effect.power;
-        logs.push(`${unit.emoji} encanta ${target.emoji} (+${effect.power} atk)`);
+        logs.push({
+          kind: "enchant",
+          source: logRef(unit.row, unit.name),
+          target: logRef(target.row, target.name),
+          amount: effect.power,
+        });
       }
     }
   }
@@ -83,8 +84,8 @@ function applyEnchantments(state: BattleState): string[] {
   return logs;
 }
 
-function applyHeals(state: BattleState): string[] {
-  const logs: string[] = [];
+function applyHeals(state: BattleState): BattleLogEntry[] {
+  const logs: BattleLogEntry[] = [];
   const allUnits = [...aliveUnits(state.playerRow), ...aliveUnits(state.enemyRow)];
 
   for (const unit of allUnits) {
@@ -100,7 +101,11 @@ function applyHeals(state: BattleState): string[] {
         target.currentHp = Math.min(target.maxHp, target.currentHp + effect.power);
         const healed = target.currentHp - before;
         if (healed > 0) {
-          logs.push(`${target.emoji} cura +${healed}`);
+          logs.push({
+            kind: "heal",
+            target: logRef(target.row, target.name),
+            amount: healed,
+          });
         }
       }
     }
@@ -109,13 +114,10 @@ function applyHeals(state: BattleState): string[] {
   return logs;
 }
 
-function gatherAttacks(state: BattleState): Map<string, number> {
-  const damageByTarget = new Map<string, number>();
+function gatherAttacks(state: BattleState): DamageHit[] {
+  const hits: DamageHit[] = [];
 
-  const sides: { row: BoardRow; opposite: BoardRow }[] = [
-    { row: state.playerRow, opposite: state.enemyRow },
-    { row: state.enemyRow, opposite: state.playerRow },
-  ];
+  const sides: { row: BoardRow }[] = [{ row: state.playerRow }, { row: state.enemyRow }];
 
   for (const { row } of sides) {
     for (const attacker of aliveUnits(row)) {
@@ -128,36 +130,43 @@ function gatherAttacks(state: BattleState): Map<string, number> {
         for (const col of cols) {
           const target = getUnit(targetRow, col);
           if (!target || target.currentHp <= 0) continue;
-          const key = `${target.row}-${col}`;
-          damageByTarget.set(key, (damageByTarget.get(key) ?? 0) + dmg);
+          hits.push({ target, attacker, damage: dmg });
         }
       }
     }
   }
 
-  return damageByTarget;
+  return hits;
 }
 
-function applyDamageMap(state: BattleState, damageByTarget: Map<string, number>): string[] {
-  const logs: string[] = [];
+function applyDamageHits(state: BattleState, hits: DamageHit[]): BattleLogEntry[] {
+  const logs: BattleLogEntry[] = [];
+  const deathsLogged = new Set<string>();
 
-  for (const [key, rawDamage] of damageByTarget) {
-    const [rowLabel, colStr] = key.split("-");
-    const col = Number(colStr) as Column;
-    const row = rowLabel === "player" ? state.playerRow : state.enemyRow;
-    const target = getUnit(row, col);
-    if (!target || rawDamage <= 0) continue;
+  for (const { target, attacker, damage } of hits) {
+    if (target.currentHp <= 0) continue;
 
-    const { reduced, logLines } = collectDefense(
-      rowLabel === "player" ? state.playerRow : state.enemyRow,
-      col,
-      rawDamage,
-    );
-    logs.push(...logLines);
+    let hpDamage = damage;
+    const source = logRef(attacker.row, attacker.name);
+    const victim = logRef(target.row, target.name);
 
-    if (reduced > 0) {
-      target.currentHp = Math.max(0, target.currentHp - reduced);
-      logs.push(`${target.emoji} leva ${reduced} de dano`);
+    if (state.round === 1 && target.defenseRemaining > 0) {
+      const blocked = Math.min(hpDamage, target.defenseRemaining);
+      target.defenseRemaining -= blocked;
+      hpDamage -= blocked;
+      if (blocked > 0) {
+        logs.push({ kind: "block", target: victim, source, amount: blocked });
+      }
+    }
+
+    if (hpDamage > 0) {
+      target.currentHp = Math.max(0, target.currentHp - hpDamage);
+      logs.push({ kind: "damage", target: victim, source, amount: hpDamage });
+    }
+
+    if (target.currentHp <= 0 && !deathsLogged.has(target.instanceId)) {
+      deathsLogged.add(target.instanceId);
+      logs.push({ kind: "death", unit: victim });
     }
   }
 
@@ -171,26 +180,54 @@ function removeDead(row: BoardRow): void {
   }
 }
 
+function checkRoundLimit(state: BattleState): void {
+  if (state.status === "finished" || state.round !== 5) return;
+
+  const playerHp = totalHp(state.playerRow);
+  const enemyHp = totalHp(state.enemyRow);
+  state.status = "finished";
+
+  if (playerHp > enemyHp) {
+    state.winner = "player";
+    state.log.push({
+      kind: "result",
+      message: `Fim da rodada 5 — vitória por PV (${playerHp} vs ${enemyHp}).`,
+    });
+  } else if (enemyHp > playerHp) {
+    state.winner = "enemy";
+    state.log.push({
+      kind: "result",
+      message: `Fim da rodada 5 — derrota por PV (${enemyHp} vs ${playerHp}).`,
+    });
+  } else {
+    state.winner = "draw";
+    state.log.push({
+      kind: "result",
+      message: `Fim da rodada 5 — empate (${playerHp} PV).`,
+    });
+  }
+}
+
 function checkWinner(state: BattleState): void {
   const playerAlive = aliveUnits(state.playerRow).length;
   const enemyAlive = aliveUnits(state.enemyRow).length;
 
   if (playerAlive === 0 && enemyAlive === 0) {
     state.status = "finished";
-    state.winner = "enemy";
-    state.log.push("Empate — a IA vence por desempate.");
+    state.winner = "draw";
+    state.log.push({ kind: "result", message: "Empate — ambas as fileiras caíram." });
     return;
   }
   if (enemyAlive === 0) {
     state.status = "finished";
     state.winner = "player";
-    state.log.push("Vitória! Todas as cartas inimigas caíram.");
+    state.log.push({ kind: "result", message: "Vitória! Todas as cartas inimigas caíram." });
     return;
   }
   if (playerAlive === 0) {
     state.status = "finished";
     state.winner = "enemy";
-    state.log.push("Derrota... Suas cartas foram destruídas.");
+    state.log.push({ kind: "result", message: "Derrota... Suas cartas foram destruídas." });
   }
 }
 
@@ -201,13 +238,36 @@ export function createBattleState(playerUnits: BattleUnit[], enemyUnits: BattleU
   for (const u of playerUnits) setUnit(playerRow, u.column, { ...u, row: "player" });
   for (const u of enemyUnits) setUnit(enemyRow, u.column, { ...u, row: "enemy" });
 
+  initDefensePools(playerRow);
+  initDefensePools(enemyRow);
+
   return {
     round: 0,
     playerRow,
     enemyRow,
-    log: ["Batalha iniciada! Clique em Próxima rodada."],
+    playerHpMax: sumMaxHp(playerRow),
+    enemyHpMax: sumMaxHp(enemyRow),
+    log: [
+      {
+        kind: "meta",
+        message: "Batalha iniciada! Use «Iniciar rodada» ou «Batalha instantânea».",
+      },
+    ],
     status: "active",
   };
+}
+
+const INSTANT_BATTLE_ROUND_CAP = 10;
+
+/** Resolve rodadas até o fim (vitória, derrota, empate ou limite de rodadas). */
+export function resolveBattleInstant(state: BattleState): BattleState {
+  let current = state;
+  let guard = 0;
+  while (current.status === "active" && guard < INSTANT_BATTLE_ROUND_CAP) {
+    current = resolveRound(current);
+    guard++;
+  }
+  return current;
 }
 
 export function resolveRound(state: BattleState): BattleState {
@@ -218,19 +278,20 @@ export function resolveRound(state: BattleState): BattleState {
     round: state.round + 1,
     playerRow: cloneRow(state.playerRow),
     enemyRow: cloneRow(state.enemyRow),
-    log: [`—— Rodada ${state.round + 1} ——`],
+    log: [...state.log, { kind: "round", round: state.round + 1 }],
   };
 
   next.log.push(...applyEnchantments(next));
   next.log.push(...applyHeals(next));
 
-  const damageMap = gatherAttacks(next);
-  next.log.push(...applyDamageMap(next, damageMap));
+  const hits = gatherAttacks(next);
+  next.log.push(...applyDamageHits(next, hits));
 
   removeDead(next.playerRow);
   removeDead(next.enemyRow);
 
   checkWinner(next);
+  checkRoundLimit(next);
   return next;
 }
 

@@ -7,14 +7,34 @@
       "name": "Golem Rúnico da Floresta Sagrada",
       "race": "golem",
       "cardType": "Golem · Terra",
-      "description": "Sentinela de pedra antiga com runas azuis, despertado pela magia da floresta primordial. Imóvel como a montanha, feroz quando profanam seu bosque.",
-      "effectSummary": "Ataca o centro inimigo; defende aliados à esquerda e no centro.",
+      "description": "Golem defensor da magia primordial presente na floresta sagrada, para os amigos da floresta ele é um gentil e amigável, mas para os inimigos ele é impiedoso e letal.",
+      "effectSummary": "Ataca o centro inimigo; defende toda a fileira aliada.",
       "level": 1,
       "artUrl": "/cards/art/golem.png",
-      "stats": { "hp": 6, "attack": 3, "defense": 3 },
+      "stats": {
+        "hp": 4,
+        "attack": 2,
+        "defense": 3
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle"] },
-        { "orientation": "down", "category": "defense", "variant": "defense", "power": 3, "directions": ["left", "middle"] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack",
+          "power": 2,
+          "directions": [
+            "middle"
+          ]
+        },
+        {
+          "orientation": "down",
+          "category": "defense",
+          "variant": "defense",
+          "power": 3,
+          "directions": [
+            "row"
+          ]
+        }
       ]
     },
     {
@@ -26,10 +46,30 @@
       "effectSummary": "Ataque duplo no centro; encanta aliado à direita.",
       "level": 1,
       "artUrl": "/cards/art/elfo.png",
-      "stats": { "hp": 5, "attack": 4, "magic": 2 },
+      "stats": {
+        "hp": 5,
+        "attack": 4,
+        "magic": 2
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "attack-double", "power": 2, "directions": ["middle"] },
-        { "orientation": "down", "category": "magic", "variant": "enchant", "power": 2, "directions": ["right"] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack-double",
+          "power": 2,
+          "directions": [
+            "middle"
+          ]
+        },
+        {
+          "orientation": "down",
+          "category": "magic",
+          "variant": "enchant",
+          "power": 2,
+          "directions": [
+            "right"
+          ]
+        }
       ]
     },
     {
@@ -41,9 +81,18 @@
       "effectSummary": "Ataca toda a fileira inimiga.",
       "level": 2,
       "artUrl": "/cards/art/fenix.png",
-      "stats": { "hp": 5, "attack": 2 },
+      "stats": {
+        "hp": 5,
+        "attack": 2
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "group-attack", "power": 2, "directions": [] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "group-attack",
+          "power": 2,
+          "directions": []
+        }
       ]
     },
     {
@@ -55,10 +104,31 @@
       "effectSummary": "Ataca centro e direita; defende o centro aliado.",
       "level": 2,
       "artUrl": "/cards/art/cavaleiro.png",
-      "stats": { "hp": 7, "attack": 3, "defense": 2 },
+      "stats": {
+        "hp": 7,
+        "attack": 3,
+        "defense": 2
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle", "right"] },
-        { "orientation": "down", "category": "defense", "variant": "defense", "power": 2, "directions": ["middle"] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack",
+          "power": 3,
+          "directions": [
+            "left",
+            "middle"
+          ]
+        },
+        {
+          "orientation": "down",
+          "category": "defense",
+          "variant": "defense",
+          "power": 2,
+          "directions": [
+            "middle"
+          ]
+        }
       ]
     },
     {
@@ -70,10 +140,30 @@
       "effectSummary": "Ataque forte no centro; cura aliado central.",
       "level": 3,
       "artUrl": "/cards/art/dragao.png",
-      "stats": { "hp": 8, "attack": 4, "magic": 3 },
+      "stats": {
+        "hp": 8,
+        "attack": 4,
+        "magic": 3
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "attack", "power": 4, "directions": ["middle"] },
-        { "orientation": "down", "category": "magic", "variant": "heal", "power": 3, "directions": ["middle"] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack",
+          "power": 4,
+          "directions": [
+            "middle"
+          ]
+        },
+        {
+          "orientation": "down",
+          "category": "magic",
+          "variant": "heal",
+          "power": 3,
+          "directions": [
+            "middle"
+          ]
+        }
       ]
     },
     {
@@ -85,9 +175,21 @@
       "effectSummary": "Cura aliados à esquerda e no centro.",
       "level": 1,
       "artUrl": "/cards/art/sereia.png",
-      "stats": { "hp": 6, "magic": 3 },
+      "stats": {
+        "hp": 6,
+        "magic": 3
+      },
       "effects": [
-        { "orientation": "down", "category": "magic", "variant": "heal", "power": 3, "directions": ["left", "middle"] }
+        {
+          "orientation": "down",
+          "category": "magic",
+          "variant": "heal",
+          "power": 3,
+          "directions": [
+            "left",
+            "middle"
+          ]
+        }
       ]
     },
     {
@@ -99,10 +201,30 @@
       "effectSummary": "Encanta o centro; ataque leve à esquerda inimiga.",
       "level": 1,
       "artUrl": "/cards/art/fada.png",
-      "stats": { "hp": 4, "attack": 2, "magic": 2 },
+      "stats": {
+        "hp": 4,
+        "attack": 1,
+        "magic": 3
+      },
       "effects": [
-        { "orientation": "down", "category": "magic", "variant": "enchant", "power": 2, "directions": ["middle"] },
-        { "orientation": "up", "category": "attack", "variant": "attack", "power": 2, "directions": ["left"] }
+        {
+          "orientation": "down",
+          "category": "magic",
+          "variant": "enchant",
+          "power": 3,
+          "directions": [
+            "middle"
+          ]
+        },
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack",
+          "power": 1,
+          "directions": [
+            "left"
+          ]
+        }
       ]
     },
     {
@@ -114,10 +236,30 @@
       "effectSummary": "Ataque duplo à direita; defende à esquerda.",
       "level": 2,
       "artUrl": "/cards/art/orc.png",
-      "stats": { "hp": 7, "attack": 4, "defense": 3 },
+      "stats": {
+        "hp": 4,
+        "attack": 2,
+        "defense": 3
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "attack-double", "power": 2, "directions": ["right"] },
-        { "orientation": "down", "category": "defense", "variant": "defense", "power": 3, "directions": ["left"] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack-double",
+          "power": 2,
+          "directions": [
+            "right"
+          ]
+        },
+        {
+          "orientation": "down",
+          "category": "defense",
+          "variant": "defense",
+          "power": 3,
+          "directions": [
+            "left"
+          ]
+        }
       ]
     },
     {
@@ -129,10 +271,32 @@
       "effectSummary": "Ataca centro; defende toda a fileira aliada (fraco).",
       "level": 3,
       "artUrl": "/cards/art/serafim.png",
-      "stats": { "hp": 6, "attack": 3, "defense": 1 },
+      "stats": {
+        "hp": 6,
+        "attack": 3,
+        "defense": 1
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle"] },
-        { "orientation": "down", "category": "defense", "variant": "defense", "power": 1, "directions": ["left", "middle", "right"] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack",
+          "power": 3,
+          "directions": [
+            "middle"
+          ]
+        },
+        {
+          "orientation": "down",
+          "category": "defense",
+          "variant": "defense",
+          "power": 1,
+          "directions": [
+            "left",
+            "middle",
+            "right"
+          ]
+        }
       ]
     },
     {
@@ -144,10 +308,30 @@
       "effectSummary": "Ataca centro e esquerda; alta defesa no centro.",
       "level": 4,
       "artUrl": "/cards/art/gelo.png",
-      "stats": { "hp": 9, "attack": 3, "defense": 4 },
+      "stats": {
+        "hp": 6,
+        "attack": 4,
+        "defense": 1
+      },
       "effects": [
-        { "orientation": "up", "category": "attack", "variant": "attack", "power": 3, "directions": ["middle", "left"] },
-        { "orientation": "down", "category": "defense", "variant": "defense", "power": 4, "directions": ["middle"] }
+        {
+          "orientation": "up",
+          "category": "attack",
+          "variant": "attack",
+          "power": 4,
+          "directions": [
+            "middle"
+          ]
+        },
+        {
+          "orientation": "down",
+          "category": "defense",
+          "variant": "defense",
+          "power": 1,
+          "directions": [
+            "middle"
+          ]
+        }
       ]
     }
   ]

@@ -8,14 +8,18 @@ const COLORS: Record<EffectCategory, string> = {
   magic: "#c084fc",
 };
 
+type ArrowDir = "left" | "middle" | "right";
+
 interface ArrowSpec {
   category: EffectCategory;
-  direction: EffectDirection;
+  direction: ArrowDir;
 }
 
-function dirsFor(effect: CardEffect): EffectDirection[] {
+function dirsFor(effect: CardEffect): ArrowDir[] {
   if (effect.variant === "group-attack") return ["left", "middle", "right"];
-  return effect.directions.length > 0 ? effect.directions : ["middle"];
+  const dirs = effect.directions.length > 0 ? effect.directions : ["middle"];
+  if (dirs.includes("row")) return ["left", "middle", "right"];
+  return dirs.filter((d): d is ArrowDir => d !== "row");
 }
 
 function collectArrows(effects: CardEffect[], zone: "top" | "bottom"): ArrowSpec[] {
@@ -31,22 +35,36 @@ function collectArrows(effects: CardEffect[], zone: "top" | "bottom"): ArrowSpec
   return out;
 }
 
-const X_POS: Record<EffectDirection, string> = {
+const X_POS: Record<ArrowDir, string> = {
   left: "22%",
   middle: "50%",
   right: "78%",
 };
 
-/** Ataque (topo): diagonal para colunas inimigas. Defesa/magia (base): middle = ↑ em si; laterais = ← → */
-function arrowPath(spec: ArrowSpec, zone: "attack" | "ally"): string {
+const VIEW_H = 40;
+
+/** Espelha coordenadas Y para setas do inimigo (ataque embaixo ↓, defesa/magia em cima ↑). */
+function flipPathY(path: string): string {
+  return path.replace(/([ML])\s*([\d.]+)\s+([\d.]+)/g, (_, cmd, x, y) => {
+    return `${cmd} ${x} ${VIEW_H - Number(y)}`;
+  });
+}
+
+/** Ataque (topo do jogador): diagonal para colunas inimigas. Defesa/magia (base): middle = ↑; laterais = ← → */
+function arrowPath(spec: ArrowSpec, zone: "attack" | "ally", flip: boolean): string {
+  let path: string;
   if (zone === "attack") {
-    if (spec.direction === "left") return "M 50 34 L 38 6";
-    if (spec.direction === "right") return "M 50 34 L 62 6";
-    return "M 50 34 L 50 6";
+    if (spec.direction === "left") path = "M 50 34 L 38 6";
+    else if (spec.direction === "right") path = "M 50 34 L 62 6";
+    else path = "M 50 34 L 50 6";
+  } else if (spec.direction === "middle") {
+    path = "M 50 34 L 50 6";
+  } else if (spec.direction === "left") {
+    path = "M 78 20 L 18 20";
+  } else {
+    path = "M 22 20 L 82 20";
   }
-  if (spec.direction === "middle") return "M 50 34 L 50 6";
-  if (spec.direction === "left") return "M 78 20 L 18 20";
-  return "M 22 20 L 82 20";
+  return flip ? flipPathY(path) : path;
 }
 
 function ExternalArrow({
@@ -54,11 +72,13 @@ function ExternalArrow({
   zone,
   idPrefix,
   index,
+  flip,
 }: {
   spec: ArrowSpec;
   zone: "attack" | "ally";
   idPrefix: string;
   index: number;
+  flip: boolean;
 }) {
   const color = COLORS[spec.category];
   const markerId =
@@ -68,7 +88,7 @@ function ExternalArrow({
         ? `${idPrefix}-blue-${index}`
         : `${idPrefix}-purple-${index}`;
 
-  const path = arrowPath(spec, zone);
+  const path = arrowPath(spec, zone, flip);
 
   return (
     <svg className="h-full w-[72px]" viewBox="0 0 100 40" preserveAspectRatio="xMidYMid meet" aria-hidden>
@@ -94,11 +114,13 @@ function ArrowZone({
   placement,
   zone,
   idPrefix,
+  flip,
 }: {
   arrows: ArrowSpec[];
   placement: "top" | "bottom";
   zone: "attack" | "ally";
   idPrefix: string;
+  flip: boolean;
 }) {
   if (arrows.length === 0) return null;
 
@@ -113,33 +135,51 @@ function ArrowZone({
           className="absolute top-0 h-full"
           style={{ left: X_POS[spec.direction], transform: "translateX(-50%)" }}
         >
-          <ExternalArrow spec={spec} zone={zone} idPrefix={idPrefix} index={i} />
+          <ExternalArrow spec={spec} zone={zone} idPrefix={idPrefix} index={i} flip={flip} />
         </div>
       ))}
     </div>
   );
 }
 
+export type ArrowSide = "player" | "enemy";
+
 interface EffectArrowsProps {
   effects: CardEffect[];
   cardId?: string;
+  /** Inimigo: ataque embaixo (↓ jogador), defesa/magia em cima (↑ aliados). */
+  side?: ArrowSide;
 }
 
-export function EffectArrows({ effects, cardId = "card" }: EffectArrowsProps) {
-  const topArrows = collectArrows(effects, "top");
-  const bottomArrows = collectArrows(effects, "bottom");
+export function EffectArrows({ effects, cardId = "card", side = "player" }: EffectArrowsProps) {
+  const invert = side === "enemy";
+  const topArrows = collectArrows(effects, invert ? "bottom" : "top");
+  const bottomArrows = collectArrows(effects, invert ? "top" : "bottom");
 
   return (
     <>
-      <ArrowZone arrows={topArrows} placement="top" zone="attack" idPrefix={`${cardId}-top`} />
-      <ArrowZone arrows={bottomArrows} placement="bottom" zone="ally" idPrefix={`${cardId}-bot`} />
+      <ArrowZone
+        arrows={topArrows}
+        placement="top"
+        zone={invert ? "ally" : "attack"}
+        idPrefix={`${cardId}-top`}
+        flip={invert}
+      />
+      <ArrowZone
+        arrows={bottomArrows}
+        placement="bottom"
+        zone={invert ? "attack" : "ally"}
+        idPrefix={`${cardId}-bot`}
+        flip={invert}
+      />
     </>
   );
 }
 
-export function arrowPadding(effects: CardEffect[]) {
-  const top = collectArrows(effects, "top").length > 0;
-  const bottom = collectArrows(effects, "bottom").length > 0;
+export function arrowPadding(effects: CardEffect[], side: ArrowSide = "player") {
+  const invert = side === "enemy";
+  const top = collectArrows(effects, invert ? "bottom" : "top").length > 0;
+  const bottom = collectArrows(effects, invert ? "top" : "bottom").length > 0;
   return {
     top: top ? ARROW_ZONE_H : 0,
     bottom: bottom ? ARROW_ZONE_H : 0,

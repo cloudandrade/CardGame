@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { effectLegend } from "@/components/EffectArrows";
+import { arrowPadding, effectLegend } from "@/components/EffectArrows";
 import { TCG_CARD_FRAME_H, TCG_CARD_FRAME_W, TcgCard } from "@/components/TcgCard";
 import { getAllCardTemplates, searchCards } from "@/lib/cards";
 import type { CardTemplate } from "@/lib/types";
@@ -100,16 +100,24 @@ export default function CollectionPage() {
 
       {preview && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-label={`Carta: ${preview.name}`}
+          onClick={() => setPreview(null)}
         >
-          <div className="relative max-h-[95vh] overflow-y-auto">
+          <div
+            className="relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               onClick={() => setPreview(null)}
-              className="absolute -right-1 -top-1 z-[60] flex h-10 w-10 items-center justify-center rounded-full border-2 border-black bg-white text-2xl leading-none text-black shadow-lg hover:bg-amber-100"
+              className="absolute z-[60] flex h-7 w-7 items-center justify-center text-2xl font-light leading-none text-white/45 transition-colors hover:text-white/85"
+              style={{
+                top: arrowPadding(preview.effects).top * previewScale + 4,
+                right: 6,
+              }}
               aria-label="Fechar"
             >
               ×
