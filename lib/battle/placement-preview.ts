@@ -1,3 +1,4 @@
+import { HEAL_MAX_ROUND } from "@/lib/config";
 import { computeDefenseForColumn } from "@/lib/battle/defense";
 import { getRelativeTargetColumns } from "@/lib/battle/targets";
 import type { CardEffect, CardTemplate, Column } from "@/lib/types";
@@ -8,7 +9,7 @@ export interface PadCombatPreview {
   cardId: string;
   name: string;
   lp: number;
-  /** Cura da rodada 1 (efeito heal de aliados). */
+  /** Cura total prevista nas rodadas 1–3 (por rodada × HEAL_MAX_ROUND). */
   lpHeal: number;
   atk: number;
   atkEnchant: number;
@@ -106,7 +107,8 @@ export function computeLineupPreview(
       continue;
     }
 
-    const lpHeal = healBonusForColumn(placements, getTemplate, col);
+    const healPerRound = healBonusForColumn(placements, getTemplate, col);
+    const lpHeal = healPerRound * HEAL_MAX_ROUND;
     const atkEnchant = enchantBonusForColumn(placements, getTemplate, col);
     const { self: defSelf, allyParts: defAllyParts } = defenseForColumn(
       placements,

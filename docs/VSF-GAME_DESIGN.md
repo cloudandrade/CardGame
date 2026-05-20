@@ -141,7 +141,7 @@ Interpretação: ataca o centro e a esquerda do campo inimigo com 3 de dano cada
 | Variant | Comportamento |
 |---------|----------------|
 | `enchant` | Aumenta o dano de ataques da carta alvo (Down, direções) em `power` até o fim da batalha ou por N rodadas (escolha de implementação: **até fim da batalha**). |
-| `heal` | Na **próxima rodada**, cura `power` PV de alvos nas direções **antes** de aplicar dano. Se a carta alvo morrer na **mesma rodada** em que o heal seria aplicado (primeira rodada de efeito), **heal não ocorre**. |
+| `heal` | No início da rodada (antes do dano), cura `power` PV nos alvos das `directions`, até o PV máximo. **Só nas rodadas 1–3** (a partir da rodada 4 não cura mais). |
 | `transform` | Aumenta PV máximo e atual da carta alvo em `power` (cap global de PV por carta: 12). |
 
 ---

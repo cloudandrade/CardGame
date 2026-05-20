@@ -15,8 +15,10 @@ Abra [http://localhost:3000](http://localhost:3000).
 
 - Escolher 3 cartas e posicionar (esquerda / centro / direita)
 - Batalha por rodadas com ataque, defesa, cura e encantamento
-- IA com cartas aleatórias
-- Progresso no **localStorage** (XP, nível, cartas desbloqueadas)
+- IA fácil (aleatória); IA avançada ao ter carta nível 3+ no acervo
+- 6 cartas fixas por partida; acervo cresce a cada 100 XP
+- Progresso no **localStorage**
+- XP por vitória: `NEXT_PUBLIC_BATTLE_XP_REWARD` (copie `.env.sample` → `.env.local`)
 - Sem login, sem banco, sem PvP — propositalmente enxuto
 
 ## Coleção e cartas

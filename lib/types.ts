@@ -78,9 +78,13 @@ export interface BattleState {
 
 export interface PlayerSave {
   xp: number;
-  level: number;
   wins: number;
-  unlockedCardIds: string[];
+  /** XP ganho em vitórias (só sobe ao vencer; não depende do .env ao recarregar). */
+  totalXpEarned: number;
+  /** 6 cartas fixas usadas em toda partida (escolhe 3 por batalha). */
+  rosterCardIds: string[];
+  /** Acervo completo; +1 carta a cada 100 XP de totalXpEarned. */
+  collectionCardIds: string[];
 }
 
 export const COLUMN_LABELS = ["Esquerda", "Centro", "Direita"] as const;

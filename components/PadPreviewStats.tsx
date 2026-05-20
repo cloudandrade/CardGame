@@ -28,7 +28,7 @@ export function PadPreviewStats({ preview }: PadPreviewStatsProps) {
         {preview.name}
       </p>
       <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-lg bg-black/50 px-2 py-1.5">
-        <MiniStat icon={STAT_ICONS.hp} label="Pontos de vida">
+        <MiniStat icon={STAT_ICONS.hp} label="PV + cura prevista (rodadas 1–3)">
           {preview.lp}
           {preview.lpHeal > 0 && <span className="text-emerald-400">+{preview.lpHeal}</span>}
         </MiniStat>

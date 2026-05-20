@@ -70,6 +70,13 @@ export function pickRandomTemplates(count: number, pool?: CardTemplate[]): CardT
   return picked;
 }
 
+/** Embaralha e retorna até `count` cartas distintas. */
+export function pickUniqueTemplates(count: number, pool?: CardTemplate[]): CardTemplate[] {
+  const source = pool && pool.length > 0 ? pool : templates;
+  const shuffled = [...source].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
 export function randomEnemyPlacement(cards: CardTemplate[]): BattleUnit[] {
   const cols: Column[] = [0, 1, 2];
   const shuffledCols = [...cols].sort(() => Math.random() - 0.5);

@@ -18,18 +18,21 @@ import {
   totalHp,
 } from "@/lib/battle/engine";
 import { computeLineupPreview } from "@/lib/battle/placement-preview";
-import {
-  createBattleUnit,
-  getCardTemplate,
-  getStarterHand,
-  pickRandomTemplates,
-  randomEnemyPlacement,
-} from "@/lib/cards";
+import { createBattleUnit, getAllCardTemplates, getCardTemplate } from "@/lib/cards";
+import { buildEnemyForBattle } from "@/lib/battle/ai-lineup";
+import { XP_PER_CARD_UNLOCK } from "@/lib/config";
 import { effectLegend } from "@/components/EffectArrows";
 import { GameRulesPanel } from "@/components/GameRules";
 import { PadPreviewStats } from "@/components/PadPreviewStats";
 import Link from "next/link";
-import { addWinXp, loadSave, resetSave } from "@/lib/storage";
+import {
+  addWinXp,
+  getCollectionTemplates,
+  getRosterTemplates,
+  loadSave,
+  playerHasLevel3Card,
+  resetSave,
+} from "@/lib/storage";
 import type { BattleState, CardTemplate, Column, PlayerSave } from "@/lib/types";
 import { COLUMN_LABELS } from "@/lib/types";
 
@@ -77,7 +80,7 @@ function padFrameForColumn(
 export function Game() {
   const [phase, setPhase] = useState<Phase>("menu");
   const [save, setSave] = useState<PlayerSave | null>(null);
-  const [pool, setPool] = useState<CardTemplate[]>([]);
+  const [roster, setRoster] = useState<CardTemplate[]>([]);
   const [placements, setPlacements] = useState<Record<Column, string | null>>({
     0: null,
     1: null,
@@ -94,10 +97,7 @@ export function Game() {
   useEffect(() => {
     const s = loadSave();
     setSave(s);
-    const cards = s.unlockedCardIds
-      .map((id) => getCardTemplate(id))
-      .filter((c): c is CardTemplate => Boolean(c));
-    setPool(cards.length >= 3 ? cards : cards);
+    setRoster(getRosterTemplates(s));
   }, []);
 
   useEffect(() => {
@@ -162,25 +162,26 @@ export function Game() {
         return t ? createBattleUnit(t, col, "player") : null;
       }).filter(Boolean) as ReturnType<typeof createBattleUnit>[];
 
-      const enemyTemplates = pickRandomTemplates(3, pool);
-      const enemyUnits = randomEnemyPlacement(enemyTemplates);
+      const smartAi = save ? playerHasLevel3Card(save) : false;
+      const enemyPool = getAllCardTemplates();
+      const enemyUnits = buildEnemyForBattle(enemyPool, smartAi);
 
       setBattle(createBattleState(playerUnits, enemyUnits));
       setPhase("battle");
     },
-    [pool],
+    [save],
   );
 
   const applyBattleRewards = useCallback(
     (finished: BattleState) => {
       if (finished.winner === "player" && save) {
-        const { save: updated, leveledUp, newCardId } = addWinXp(save);
+        const { save: updated, xpGained, cardsUnlocked } = addWinXp(save);
         setSave(updated);
-        let msg = "+5 XP";
-        if (leveledUp) msg += " · Subiu de nível!";
-        if (newCardId) {
-          const c = getCardTemplate(newCardId);
-          msg += ` · Nova carta: ${c?.name}`;
+        setRoster(getRosterTemplates(updated));
+        let msg = `+${xpGained} XP`;
+        for (const id of cardsUnlocked) {
+          const c = getCardTemplate(id);
+          msg += ` · Nova carta no acervo: ${c?.name ?? id}`;
         }
         setLastReward(msg);
       } else {
@@ -224,11 +225,10 @@ export function Game() {
   };
 
   const beginSelectPhase = () => {
+    if (!save) return;
     setPlacements({ 0: null, 1: null, 2: null });
     setPendingCardId(null);
-    const hand =
-      pool.length <= 6 ? getStarterHand(pool.map((c) => c.id)) : pickRandomTemplates(6, pool);
-    setHandForRun(hand);
+    setHandForRun(getRosterTemplates(save));
     setPhase("select");
   };
 
@@ -236,10 +236,7 @@ export function Game() {
     resetSave();
     const s = loadSave();
     setSave(s);
-    const cards = s.unlockedCardIds
-      .map((id) => getCardTemplate(id))
-      .filter((c): c is CardTemplate => Boolean(c));
-    setPool(cards);
+    setRoster(getRosterTemplates(s));
     resetRun();
   };
 
@@ -259,15 +256,18 @@ export function Game() {
         <h1 className="text-3xl font-bold tracking-tight">VSF</h1>
         <p className="text-sm text-[var(--muted)]">Very Snap Fight</p>
         <p className="mt-2 text-xs text-[var(--muted)]">
-          Nv. {save.level} · {save.xp}/100 XP · {save.wins} vitórias
+          {save.collectionCardIds.length} desbloqueada
+          {save.collectionCardIds.length === 1 ? "" : "s"} no acervo · {save.xp}/{XP_PER_CARD_UNLOCK}{" "}
+          XP ·{" "}
+          {save.wins} vitórias
         </p>
       </header>
 
       {phase === "menu" && (
         <section className="space-y-4 rounded-2xl bg-[var(--panel)] p-6">
           <p className="text-sm leading-relaxed text-[var(--muted)]">
-            Escolha 3 cartas, posicione na fileira e enfrente a IA. Partidas rápidas, sem login — progresso salvo no
-            navegador.
+            Suas 6 cartas de batalha são fixas; escolha 3 por partida. A cada {XP_PER_CARD_UNLOCK} XP você ganha +1
+            carta no acervo. Progresso salvo no navegador.
           </p>
           <button
             type="button"
@@ -287,7 +287,8 @@ export function Game() {
             href="/collection"
             className="block w-full rounded-xl border border-amber-700/40 py-3 text-center text-sm font-medium text-amber-100 hover:bg-amber-950/40"
           >
-            Ver coleção (10 cartas)
+            Ver acervo ({save.collectionCardIds.length} desbloqueada
+            {save.collectionCardIds.length === 1 ? "" : "s"})
           </Link>
           <div className="pt-1">{effectLegend()}</div>
           <button
@@ -304,6 +305,12 @@ export function Game() {
 
       {phase === "select" && (
         <section className="space-y-6">
+          <p className="text-center text-xs text-zinc-500">
+            Suas 6 cartas de batalha são sempre as mesmas — escolha 3 para esta partida.
+            {save && playerHasLevel3Card(save)
+              ? " A IA está em modo avançado (você tem carta nível 3+ no acervo)."
+              : ""}
+          </p>
           <p className="text-center text-sm text-[var(--muted)]">
             {pendingCardId ? (
               <>
@@ -324,7 +331,7 @@ export function Game() {
               <p className="text-[var(--muted)]">
                 PV total da equipe{" "}
                 <span className="font-semibold text-emerald-300">{lineupPreview.totalLp}</span>
-                <span className="text-[10px] text-zinc-500"> (inclui cura prevista na rodada 1)</span>
+                <span className="text-[10px] text-zinc-500"> (inclui cura prevista nas rodadas 1–3)</span>
               </p>
             </div>
           )}

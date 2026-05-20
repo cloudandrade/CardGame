@@ -1,5 +1,6 @@
 import { computeDefenseForColumn, totalDefense } from "@/lib/battle/defense";
 import { logRef, type BattleLogEntry } from "@/lib/battle/log";
+import { HEAL_MAX_ROUND } from "@/lib/config";
 import { getAttackTargetColumns, getRelativeTargetColumns } from "@/lib/battle/targets";
 import type {
   BattleState,
@@ -85,6 +86,8 @@ function applyEnchantments(state: BattleState): BattleLogEntry[] {
 }
 
 function applyHeals(state: BattleState): BattleLogEntry[] {
+  if (state.round > HEAL_MAX_ROUND) return [];
+
   const logs: BattleLogEntry[] = [];
   const allUnits = [...aliveUnits(state.playerRow), ...aliveUnits(state.enemyRow)];
 

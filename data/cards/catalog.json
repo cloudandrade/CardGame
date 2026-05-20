@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "count": 10,
   "cards": [
     {
@@ -14,7 +14,7 @@
       "stats": {
         "hp": 4,
         "attack": 2,
-        "defense": 3
+        "defense": 2
       },
       "effects": [
         {
@@ -22,18 +22,14 @@
           "category": "attack",
           "variant": "attack",
           "power": 2,
-          "directions": [
-            "middle"
-          ]
+          "directions": ["middle"]
         },
         {
           "orientation": "down",
           "category": "defense",
           "variant": "defense",
-          "power": 3,
-          "directions": [
-            "row"
-          ]
+          "power": 2,
+          "directions": ["row"]
         }
       ]
     },
@@ -47,8 +43,8 @@
       "level": 1,
       "artUrl": "/cards/art/elfo.png",
       "stats": {
-        "hp": 5,
-        "attack": 4,
+        "hp": 4,
+        "attack": 3,
         "magic": 2
       },
       "effects": [
@@ -57,18 +53,14 @@
           "category": "attack",
           "variant": "attack-double",
           "power": 2,
-          "directions": [
-            "middle"
-          ]
+          "directions": ["middle"]
         },
         {
           "orientation": "down",
           "category": "magic",
           "variant": "enchant",
           "power": 2,
-          "directions": [
-            "right"
-          ]
+          "directions": ["right"]
         }
       ]
     },
@@ -78,19 +70,19 @@
       "race": "besta",
       "cardType": "Fênix · Fogo",
       "description": "Renascida das cinzas a cada milênio, suas asas incendeiam o céu. Onde pousa, rios de lava recordam sua fúria.",
-      "effectSummary": "Ataca toda a fileira inimiga.",
+      "effectSummary": "Ataca toda a fileira inimiga (dano leve).",
       "level": 2,
       "artUrl": "/cards/art/fenix.png",
       "stats": {
-        "hp": 5,
-        "attack": 2
+        "hp": 4,
+        "attack": 1
       },
       "effects": [
         {
           "orientation": "up",
           "category": "attack",
           "variant": "group-attack",
-          "power": 2,
+          "power": 1,
           "directions": []
         }
       ]
@@ -105,7 +97,7 @@
       "level": 2,
       "artUrl": "/cards/art/cavaleiro.png",
       "stats": {
-        "hp": 7,
+        "hp": 5,
         "attack": 3,
         "defense": 2
       },
@@ -115,19 +107,14 @@
           "category": "attack",
           "variant": "attack",
           "power": 3,
-          "directions": [
-            "left",
-            "middle"
-          ]
+          "directions": ["left", "middle"]
         },
         {
           "orientation": "down",
           "category": "defense",
           "variant": "defense",
           "power": 2,
-          "directions": [
-            "middle"
-          ]
+          "directions": ["middle"]
         }
       ]
     },
@@ -141,28 +128,24 @@
       "level": 3,
       "artUrl": "/cards/art/dragao.png",
       "stats": {
-        "hp": 8,
-        "attack": 4,
-        "magic": 3
+        "hp": 6,
+        "attack": 3,
+        "magic": 2
       },
       "effects": [
         {
           "orientation": "up",
           "category": "attack",
           "variant": "attack",
-          "power": 4,
-          "directions": [
-            "middle"
-          ]
+          "power": 3,
+          "directions": ["middle"]
         },
         {
           "orientation": "down",
           "category": "magic",
           "variant": "heal",
-          "power": 3,
-          "directions": [
-            "middle"
-          ]
+          "power": 2,
+          "directions": ["middle"]
         }
       ]
     },
@@ -176,19 +159,16 @@
       "level": 1,
       "artUrl": "/cards/art/sereia.png",
       "stats": {
-        "hp": 6,
-        "magic": 3
+        "hp": 5,
+        "magic": 2
       },
       "effects": [
         {
           "orientation": "down",
           "category": "magic",
           "variant": "heal",
-          "power": 3,
-          "directions": [
-            "left",
-            "middle"
-          ]
+          "power": 2,
+          "directions": ["left", "middle"]
         }
       ]
     },
@@ -202,28 +182,24 @@
       "level": 1,
       "artUrl": "/cards/art/fada.png",
       "stats": {
-        "hp": 4,
+        "hp": 3,
         "attack": 1,
-        "magic": 3
+        "magic": 2
       },
       "effects": [
         {
           "orientation": "down",
           "category": "magic",
           "variant": "enchant",
-          "power": 3,
-          "directions": [
-            "middle"
-          ]
+          "power": 2,
+          "directions": ["middle"]
         },
         {
           "orientation": "up",
           "category": "attack",
           "variant": "attack",
           "power": 1,
-          "directions": [
-            "left"
-          ]
+          "directions": ["left"]
         }
       ]
     },
@@ -239,7 +215,7 @@
       "stats": {
         "hp": 4,
         "attack": 2,
-        "defense": 3
+        "defense": 2
       },
       "effects": [
         {
@@ -247,18 +223,14 @@
           "category": "attack",
           "variant": "attack-double",
           "power": 2,
-          "directions": [
-            "right"
-          ]
+          "directions": ["right"]
         },
         {
           "orientation": "down",
           "category": "defense",
           "variant": "defense",
-          "power": 3,
-          "directions": [
-            "left"
-          ]
+          "power": 2,
+          "directions": ["left"]
         }
       ]
     },
@@ -268,12 +240,12 @@
       "race": "celestial",
       "cardType": "Celestial · Luz",
       "description": "Guerreira alada que julga almas entre ilhas no céu. Suas asas espalham aurora e seus olhos azuis veem o coração de cada combatente.",
-      "effectSummary": "Ataca centro; defende toda a fileira aliada (fraco).",
+      "effectSummary": "Ataca centro; defende vizinhos (fraco).",
       "level": 3,
       "artUrl": "/cards/art/serafim.png",
       "stats": {
-        "hp": 6,
-        "attack": 3,
+        "hp": 5,
+        "attack": 2,
         "defense": 1
       },
       "effects": [
@@ -281,21 +253,15 @@
           "orientation": "up",
           "category": "attack",
           "variant": "attack",
-          "power": 3,
-          "directions": [
-            "middle"
-          ]
+          "power": 2,
+          "directions": ["middle"]
         },
         {
           "orientation": "down",
           "category": "defense",
           "variant": "defense",
           "power": 1,
-          "directions": [
-            "left",
-            "middle",
-            "right"
-          ]
+          "directions": ["left", "middle", "right"]
         }
       ]
     },
@@ -305,12 +271,12 @@
       "race": "elemental",
       "cardType": "Elemental · Gelo",
       "description": "Titã de gelo despertado quando a aurora toca ruínas do norte. Passos congelam o chão; punhos esmagam muralhas como vidro.",
-      "effectSummary": "Ataca centro e esquerda; alta defesa no centro.",
+      "effectSummary": "Ataca centro e esquerda; defende o centro.",
       "level": 4,
       "artUrl": "/cards/art/gelo.png",
       "stats": {
-        "hp": 6,
-        "attack": 4,
+        "hp": 5,
+        "attack": 3,
         "defense": 1
       },
       "effects": [
@@ -318,19 +284,15 @@
           "orientation": "up",
           "category": "attack",
           "variant": "attack",
-          "power": 4,
-          "directions": [
-            "middle"
-          ]
+          "power": 3,
+          "directions": ["middle", "left"]
         },
         {
           "orientation": "down",
           "category": "defense",
           "variant": "defense",
           "power": 1,
-          "directions": [
-            "middle"
-          ]
+          "directions": ["middle"]
         }
       ]
     }

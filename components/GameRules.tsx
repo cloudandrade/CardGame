@@ -51,6 +51,7 @@ export const GAME_RULES_SECTIONS: { title: string; items: string[] }[] = [
     title: "Curas",
     items: [
       "Efeitos de cura são resolvidos no início de cada rodada, antes dos ataques.",
+      "Curas só funcionam até a rodada 3 (da rodada 4 em diante não curam mais).",
       "Curam aliados nas colunas indicadas pelas direções do efeito, até o PV máximo da carta.",
     ],
   },
